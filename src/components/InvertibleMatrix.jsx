@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Button } from './ui/index.jsx';
 
 const InvertibleMatrix = () => {
   // Matrix bracket component to ensure consistent rendering
@@ -119,188 +120,115 @@ const InvertibleMatrix = () => {
     // Disable inputs if all answers are correct
     if (allCorrect) {
       setInputsDisabled(true);
+      // Mark current problem as completed
+      const newCompletedProblems = [...completedProblems];
+      newCompletedProblems[currentProblemIndex] = true;
+      setCompletedProblems(newCompletedProblems);
     }
   };
   
   // Get background color for input based on status
   const getInputBackground = (index) => {
     if (inputStatus[index] === null) return 'white';
-    return inputStatus[index] === 'correct' ? 'bg-green-100' : 'bg-red-100';
+    return inputStatus[index] === 'correct' ? 'bg-green-100' : 'bg-yellow-100';
   };
 
   return (
-    <div className="bg-gray-100 p-8 w-full max-w-4xl mx-auto">
-      <div className="w-full shadow-md bg-white rounded-lg">
-        <div className="bg-sky-50 p-6 rounded-t-lg">
-          <h1 className="text-sky-900 text-2xl font-bold">Verifying Matrix Inverses</h1>
-          <p className="text-sky-800">Test your understanding of matrix inverses and their properties!</p>
-        </div>
-        
-        <div className="p-6 space-y-6">
-          <div className="bg-blue-50 p-4 rounded border border-blue-200">
-            <h2 className="text-blue-900 font-bold mb-2">What are Matrix Inverses?</h2>
-            <p className="text-blue-600">
-              Two matrices A and B are multiplicative inverses of each other if and only if:
-            </p>
-            <p className="text-blue-600 font-bold text-center my-2">
-              A × B = B × A = I
-            </p>
-            <p className="text-blue-600 mb-4">
-              Where I is the identity matrix (1's on the main diagonal, 0's elsewhere).
-            </p>
-            
-            <div className="flex justify-center items-center gap-6 flex-wrap my-4">
-              <div className="text-center">
-                <p className="mb-2 font-medium">3×3 Identity Matrix:</p>
-                <MatrixBrackets width="90px" height="90px">
-                  <div className="flex items-center">
-                    <div className="w-7 h-7 flex items-center justify-center align-middle text-base font-medium">1</div>
-                    <div className="w-7 h-7 flex items-center justify-center align-middle text-base font-medium">0</div>
-                    <div className="w-7 h-7 flex items-center justify-center align-middle text-base font-medium">0</div>
-                  </div>
-                  <div className="flex items-center">
-                    <div className="w-7 h-7 flex items-center justify-center align-middle text-base font-medium">0</div>
-                    <div className="w-7 h-7 flex items-center justify-center align-middle text-base font-medium">1</div>
-                    <div className="w-7 h-7 flex items-center justify-center align-middle text-base font-medium">0</div>
-                  </div>
-                  <div className="flex items-center">
-                    <div className="w-7 h-7 flex items-center justify-center align-middle text-base font-medium">0</div>
-                    <div className="w-7 h-7 flex items-center justify-center align-middle text-base font-medium">0</div>
-                    <div className="w-7 h-7 flex items-center justify-center align-middle text-base font-medium">1</div>
-                  </div>
-                </MatrixBrackets>
-              </div>
-            </div>
+    <>
+      <style>{`
+        @property --r {
+          syntax: '<angle>';
+          inherits: false;
+          initial-value: 0deg;
+        }
+
+        .glow-button { 
+          min-width: auto; 
+          height: auto; 
+          position: relative; 
+          border-radius: 8px;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 1;
+          transition: all .3s ease;
+          padding: 7px;
+        }
+
+        .glow-button::before {
+          content: "";
+          display: block;
+          position: absolute;
+          background: rgb(250, 245, 255);
+          inset: 2px;
+          border-radius: 4px;
+          z-index: -2;
+        }
+
+        .simple-glow {
+          background: conic-gradient(
+            from var(--r),
+            transparent 0%,
+            rgb(0, 255, 132) 2%,
+            rgb(0, 214, 111) 8%,
+            rgb(0, 174, 90) 12%,
+            rgb(0, 133, 69) 14%,
+            transparent 15%
+          );
+          animation: rotating 3s linear infinite;
+          transition: animation 0.3s ease;
+        }
+
+        .simple-glow.stopped {
+          animation: none;
+          background: none;
+        }
+
+        @keyframes rotating {
+          0% {
+            --r: 0deg;
+          }
+          100% {
+            --r: 360deg;
+          }
+        }
+      `}</style>
+      <div className="w-[500px] h-auto mx-auto shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1),0_2px_4px_-2px_rgba(0,0,0,0.1),0_0_0_1px_rgba(0,0,0,0.05)] bg-white rounded-lg overflow-hidden">
+        <div className="p-4">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-[#5750E3] text-sm font-medium select-none">Matrix Inverse Practice</h2>
+            <button
+              onClick={resetProblems}
+              className="text-gray-500 hover:text-gray-700 text-sm px-3 py-1 rounded border border-gray-300 hover:border-gray-400 transition-colors"
+            >
+              Reset
+            </button>
           </div>
-          
-          <div className="bg-gray-50 p-6 rounded-lg border border-gray-200">
-            <h2 className="text-xl font-bold mb-4">Example</h2>
-            
-            <div className="bg-white p-4 rounded border border-gray-300">
-              <p className="mb-4">Let's check if the following two 3×3 matrices are inverses of each other:</p>
-              
-              <div className="flex justify-center items-center gap-12 my-6 flex-wrap">
-                <div className="text-center">
-                  <p className="mb-2 font-medium">Matrix A:</p>
-                  <MatrixBrackets width="90px" height="90px">
-                    <div className="flex items-center">
-                      <div className="w-7 h-7 flex items-center justify-center align-middle text-base font-medium">1</div>
-                      <div className="w-7 h-7 flex items-center justify-center align-middle text-base font-medium">1</div>
-                      <div className="w-7 h-7 flex items-center justify-center align-middle text-base font-medium">0</div>
-                    </div>
-                    <div className="flex items-center">
-                      <div className="w-7 h-7 flex items-center justify-center align-middle text-base font-medium">0</div>
-                      <div className="w-7 h-7 flex items-center justify-center align-middle text-base font-medium">1</div>
-                      <div className="w-7 h-7 flex items-center justify-center align-middle text-base font-medium">0</div>
-                    </div>
-                    <div className="flex items-center">
-                      <div className="w-7 h-7 flex items-center justify-center align-middle text-base font-medium">0</div>
-                      <div className="w-7 h-7 flex items-center justify-center align-middle text-base font-medium">0</div>
-                      <div className="w-7 h-7 flex items-center justify-center align-middle text-base font-medium">1</div>
-                    </div>
-                  </MatrixBrackets>
-                </div>
-                
-                <div className="text-center">
-                  <p className="mb-2 font-medium">Matrix B:</p>
-                  <MatrixBrackets width="90px" height="90px">
-                    <div className="flex items-center">
-                      <div className="w-7 h-7 flex items-center justify-center align-middle text-base font-medium">1</div>
-                      <div className="w-7 h-7 flex items-center justify-center align-middle text-base font-medium">-1</div>
-                      <div className="w-7 h-7 flex items-center justify-center align-middle text-base font-medium">0</div>
-                    </div>
-                    <div className="flex items-center">
-                      <div className="w-7 h-7 flex items-center justify-center align-middle text-base font-medium">0</div>
-                      <div className="w-7 h-7 flex items-center justify-center align-middle text-base font-medium">1</div>
-                      <div className="w-7 h-7 flex items-center justify-center align-middle text-base font-medium">0</div>
-                    </div>
-                    <div className="flex items-center">
-                      <div className="w-7 h-7 flex items-center justify-center align-middle text-base font-medium">0</div>
-                      <div className="w-7 h-7 flex items-center justify-center align-middle text-base font-medium">0</div>
-                      <div className="w-7 h-7 flex items-center justify-center align-middle text-base font-medium">1</div>
-                    </div>
-                  </MatrixBrackets>
-                </div>
-              </div>
-              
-              <h3 className="text-lg font-bold mt-6 mb-3">Step 1: Calculate A × B</h3>
-              
-              <div className="mb-6 overflow-x-auto">
-                <p className="font-mono text-sm mb-2">
-                  A × B = [1 1 0] × [1 -1 0]
-                </p>
-                <p className="font-mono text-sm mb-2">
-                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[0 1 0]&nbsp;&nbsp;[0 1 0]
-                </p>
-                <p className="font-mono text-sm mb-4">
-                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[0 0 1]&nbsp;&nbsp;[0 0 1]
-                </p>
-                
-                <p className="font-mono text-sm mb-2">
-                  Row 1: (1×1)+(1×0)+(0×0) = 1&nbsp;&nbsp;(1×-1)+(1×1)+(0×0) = 0&nbsp;&nbsp;(1×0)+(1×0)+(0×1) = 0
-                </p>
-                <p className="font-mono text-sm mb-2">
-                  Row 2: (0×1)+(1×0)+(0×0) = 0&nbsp;&nbsp;(0×-1)+(1×1)+(0×0) = 1&nbsp;&nbsp;(0×0)+(1×0)+(0×1) = 0
-                </p>
-                <p className="font-mono text-sm mb-2">
-                  Row 3: (0×1)+(0×0)+(1×0) = 0&nbsp;&nbsp;(0×-1)+(0×1)+(1×0) = 0&nbsp;&nbsp;(0×0)+(0×0)+(1×1) = 1
-                </p>
-                
-                <div className="mt-4 flex justify-center">
-                  <div className="text-center">
-                    <p className="mb-2 font-medium">A × B =</p>
-                    <MatrixBrackets width="90px" height="90px">
-                      <div className="flex items-center">
-                        <div className="w-7 h-7 flex items-center justify-center align-middle text-base font-medium">1</div>
-                        <div className="w-7 h-7 flex items-center justify-center align-middle text-base font-medium">0</div>
-                        <div className="w-7 h-7 flex items-center justify-center align-middle text-base font-medium">0</div>
-                      </div>
-                      <div className="flex items-center">
-                        <div className="w-7 h-7 flex items-center justify-center align-middle text-base font-medium">0</div>
-                        <div className="w-7 h-7 flex items-center justify-center align-middle text-base font-medium">1</div>
-                        <div className="w-7 h-7 flex items-center justify-center align-middle text-base font-medium">0</div>
-                      </div>
-                      <div className="flex items-center">
-                        <div className="w-7 h-7 flex items-center justify-center align-middle text-base font-medium">0</div>
-                        <div className="w-7 h-7 flex items-center justify-center align-middle text-base font-medium">0</div>
-                        <div className="w-7 h-7 flex items-center justify-center align-middle text-base font-medium">1</div>
-                      </div>
-                    </MatrixBrackets>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="bg-green-50 p-4 rounded border border-green-200">
-                <h4 className="text-green-700 font-bold mb-2">Result</h4>
-                <p className="text-green-600 font-bold">
-                  A × B equals the 3×3 identity matrix. Therefore, matrices A and B are inverses of each other!
-                </p>
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-purple-50 p-6 rounded-lg border border-purple-200 mt-8">
+
+          <div className="bg-purple-50 p-4 rounded-lg border border-purple-200">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-purple-900 font-bold">Practice</h2>
+              <h2 className="text-purple-900 font-bold">Problem {currentProblemIndex + 1}</h2>
               <div className="flex gap-2">
                 {matrixPairs.map((_, index) => (
                   <div
                     key={index}
                     className={`rounded-full transition-all duration-300 ${
-                      completedProblems[index] ? 'w-3 h-3 bg-green-500' : 
-                      index === currentProblemIndex ? 'w-2 h-2 bg-purple-600 mt-0.5' : 
+                      completedProblems[index] ? 'w-3 h-3 bg-[#008545]' : 
+                      index === currentProblemIndex ? 'w-2 h-2 bg-[#5750E3] mt-0.5' : 
                       'w-3 h-3 bg-purple-200'
                     }`}
                   />
                 ))}
               </div>
             </div>
-            <p className="mb-4">Check if the following two 3×3 matrices are inverses of each other:</p>
-            
-            <div className="bg-white p-4 rounded border border-gray-300">
-              <div className="flex justify-center items-center gap-12 my-6 flex-wrap">
+
+            <div className="bg-white p-4 rounded-lg shadow-sm mb-4">
+              <p className="font-medium text-sm mb-2">Fill in the result of multiplying these matrices below:</p>
+              
+              <div className="flex justify-center items-center gap-4 my-6">
                 <div className="text-center">
-                  <p className="mb-2 font-medium">Matrix A:</p>
+                  <p className="mb-2 font-medium text-sm">Matrix A</p>
                   <MatrixBrackets width="90px" height="90px">
                     <div className="flex items-center">
                       <div className="w-7 h-7 flex items-center justify-center align-middle text-base font-medium">{currentMatrixA[0]}</div>
@@ -319,9 +247,13 @@ const InvertibleMatrix = () => {
                     </div>
                   </MatrixBrackets>
                 </div>
+
+                <div className="flex items-center text-2xl font-bold text-gray-600 pt-7">
+                  ×
+                </div>
                 
                 <div className="text-center">
-                  <p className="mb-2 font-medium">Matrix B:</p>
+                  <p className="mb-2 font-medium text-sm">Matrix B</p>
                   <MatrixBrackets width="90px" height="90px">
                     <div className="flex items-center">
                       <div className="w-7 h-7 flex items-center justify-center align-middle text-base font-medium">{currentMatrixB[0]}</div>
@@ -340,184 +272,154 @@ const InvertibleMatrix = () => {
                     </div>
                   </MatrixBrackets>
                 </div>
-              </div>
-              
-              <div className="mt-6 border-t border-gray-200 pt-6">
-                <h3 className="text-lg font-bold mb-3">Step 1: Calculate A × B</h3>
-                
-                <div className="bg-gray-50 p-4 rounded">
-                  <p className="font-medium text-gray-700 mb-2">Fill in the result of A × B in the table below:</p>
-                  
-                  <div className="flex justify-center my-4">
-                    <div className="text-center relative">
-                      <MatrixBrackets width="140px" height="140px">
-                        <div className="flex items-center">
-                          <div className="w-8 h-8 m-1">
-                            <input 
-                              type="text" 
-                              className={`w-full h-full text-center border border-gray-300 rounded ${getInputBackground(0)}`}
-                              maxLength="1"
-                              value={matrixInputs[0]}
-                              onChange={(e) => handleInputChange(0, e.target.value)}
-                              disabled={inputsDisabled}
-                            />
-                          </div>
-                          <div className="w-8 h-8 m-1">
-                            <input 
-                              type="text" 
-                              className={`w-full h-full text-center border border-gray-300 rounded ${getInputBackground(1)}`}
-                              maxLength="1"
-                              value={matrixInputs[1]}
-                              onChange={(e) => handleInputChange(1, e.target.value)}
-                              disabled={inputsDisabled}
-                            />
-                          </div>
-                          <div className="w-8 h-8 m-1">
-                            <input 
-                              type="text" 
-                              className={`w-full h-full text-center border border-gray-300 rounded ${getInputBackground(2)}`}
-                              maxLength="1"
-                              value={matrixInputs[2]}
-                              onChange={(e) => handleInputChange(2, e.target.value)}
-                              disabled={inputsDisabled}
-                            />
-                          </div>
-                        </div>
-                        <div className="flex items-center">
-                          <div className="w-8 h-8 m-1">
-                            <input 
-                              type="text" 
-                              className={`w-full h-full text-center border border-gray-300 rounded ${getInputBackground(3)}`}
-                              maxLength="1"
-                              value={matrixInputs[3]}
-                              onChange={(e) => handleInputChange(3, e.target.value)}
-                              disabled={inputsDisabled}
-                            />
-                          </div>
-                          <div className="w-8 h-8 m-1">
-                            <input 
-                              type="text" 
-                              className={`w-full h-full text-center border border-gray-300 rounded ${getInputBackground(4)}`}
-                              maxLength="1"
-                              value={matrixInputs[4]}
-                              onChange={(e) => handleInputChange(4, e.target.value)}
-                              disabled={inputsDisabled}
-                            />
-                          </div>
-                          <div className="w-8 h-8 m-1">
-                            <input 
-                              type="text" 
-                              className={`w-full h-full text-center border border-gray-300 rounded ${getInputBackground(5)}`}
-                              maxLength="1"
-                              value={matrixInputs[5]}
-                              onChange={(e) => handleInputChange(5, e.target.value)}
-                              disabled={inputsDisabled}
-                            />
-                          </div>
-                        </div>
-                        <div className="flex items-center">
-                          <div className="w-8 h-8 m-1">
-                            <input 
-                              type="text" 
-                              className={`w-full h-full text-center border border-gray-300 rounded ${getInputBackground(6)}`}
-                              maxLength="1"
-                              value={matrixInputs[6]}
-                              onChange={(e) => handleInputChange(6, e.target.value)}
-                              disabled={inputsDisabled}
-                            />
-                          </div>
-                          <div className="w-8 h-8 m-1">
-                            <input 
-                              type="text" 
-                              className={`w-full h-full text-center border border-gray-300 rounded ${getInputBackground(7)}`}
-                              maxLength="1"
-                              value={matrixInputs[7]}
-                              onChange={(e) => handleInputChange(7, e.target.value)}
-                              disabled={inputsDisabled}
-                            />
-                          </div>
-                          <div className="w-8 h-8 m-1">
-                            <input 
-                              type="text" 
-                              className={`w-full h-full text-center border border-gray-300 rounded ${getInputBackground(8)}`}
-                              maxLength="1"
-                              value={matrixInputs[8]}
-                              onChange={(e) => handleInputChange(8, e.target.value)}
-                              disabled={inputsDisabled}
-                            />
-                          </div>
-                        </div>
-                      </MatrixBrackets>
+
+                <div className="flex items-center text-2xl font-bold text-gray-600 pt-7">
+                  =
+                </div>
+
+                <div className="text-center">
+                  <p className="mb-2 font-medium text-sm">Result</p>
+                  <MatrixBrackets width="90px" height="90px">
+                    <div className="flex items-center">
+                      <div className="w-7 h-7 m-0.5">
+                        <input 
+                          type="text" 
+                          className={`w-full h-full text-center border border-gray-300 rounded ${getInputBackground(0)}`}
+                          maxLength="1"
+                          value={matrixInputs[0]}
+                          onChange={(e) => handleInputChange(0, e.target.value)}
+                          disabled={inputsDisabled}
+                        />
+                      </div>
+                      <div className="w-7 h-7 m-0.5">
+                        <input 
+                          type="text" 
+                          className={`w-full h-full text-center border border-gray-300 rounded ${getInputBackground(1)}`}
+                          maxLength="1"
+                          value={matrixInputs[1]}
+                          onChange={(e) => handleInputChange(1, e.target.value)}
+                          disabled={inputsDisabled}
+                        />
+                      </div>
+                      <div className="w-7 h-7 m-0.5">
+                        <input 
+                          type="text" 
+                          className={`w-full h-full text-center border border-gray-300 rounded ${getInputBackground(2)}`}
+                          maxLength="1"
+                          value={matrixInputs[2]}
+                          onChange={(e) => handleInputChange(2, e.target.value)}
+                          disabled={inputsDisabled}
+                        />
+                      </div>
                     </div>
-                  </div>
-                </div>
-                
-                <div className={`mt-6 flex justify-center gap-4 ${showSolution ? 'hidden' : ''}`}>
-                  <button 
-                    className="bg-blue-400 hover:bg-blue-500 text-white px-4 py-2 rounded transition-colors"
-                    onClick={checkAnswers}
-                  >
-                    Check
-                  </button>
-                  <button 
-                    className="bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded transition-colors"
-                      onClick={() => {
-                      const correctAnswers = getCorrectAnswers();
-                      setMatrixInputs([...correctAnswers]);
-                      setInputStatus(Array(9).fill('correct'));
-                      setShowSolution(true);
-                      setInputsDisabled(true);
-                    }}
-                  >
-                    Skip
-                  </button>
-                </div>
-              </div>
-              
-              <div className={`mt-6 pt-6 border-t border-gray-200 ${showSolution ? '' : 'hidden'}`}>                
-                <div className="bg-green-50 p-4 rounded border border-green-200">
-                  <h4 className="text-green-700 font-bold mb-2">Great Job!</h4>
-                  {matrixPairs[currentProblemIndex].isInverse ? (
-                    <p className="text-green-600 mb-4">
-                      You've correctly identified that A × B equals the identity matrix, confirming these matrices are inverses!
-                    </p>
-                  ) : (
-                    <p className="text-green-600 mb-4">
-                      Great work! You've correctly found the product of A × B. Notice that it's not the identity matrix, meaning these matrices are not inverses of each other!
-                    </p>
-                  )}
-                  {currentProblemIndex === matrixPairs.length - 1 ? (
-                    <button
-                      onClick={resetProblems}
-                      className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded flex items-center justify-center gap-2"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M23 4v6h-6"></path>
-                        <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
-                      </svg>
-                      Start Over
-                    </button>
-                  ) : (
-                    <button
-                      onClick={nextProblem}
-                      className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded"
-                    >
-                      Next Problem
-                    </button>
-                  )}
+                    <div className="flex items-center">
+                      <div className="w-7 h-7 m-0.5">
+                        <input 
+                          type="text" 
+                          className={`w-full h-full text-center border border-gray-300 rounded ${getInputBackground(3)}`}
+                          maxLength="1"
+                          value={matrixInputs[3]}
+                          onChange={(e) => handleInputChange(3, e.target.value)}
+                          disabled={inputsDisabled}
+                        />
+                      </div>
+                      <div className="w-7 h-7 m-0.5">
+                        <input 
+                          type="text" 
+                          className={`w-full h-full text-center border border-gray-300 rounded ${getInputBackground(4)}`}
+                          maxLength="1"
+                          value={matrixInputs[4]}
+                          onChange={(e) => handleInputChange(4, e.target.value)}
+                          disabled={inputsDisabled}
+                        />
+                      </div>
+                      <div className="w-7 h-7 m-0.5">
+                        <input 
+                          type="text" 
+                          className={`w-full h-full text-center border border-gray-300 rounded ${getInputBackground(5)}`}
+                          maxLength="1"
+                          value={matrixInputs[5]}
+                          onChange={(e) => handleInputChange(5, e.target.value)}
+                          disabled={inputsDisabled}
+                        />
+                      </div>
+                    </div>
+                    <div className="flex items-center">
+                      <div className="w-7 h-7 m-0.5">
+                        <input 
+                          type="text" 
+                          className={`w-full h-full text-center border border-gray-300 rounded ${getInputBackground(6)}`}
+                          maxLength="1"
+                          value={matrixInputs[6]}
+                          onChange={(e) => handleInputChange(6, e.target.value)}
+                          disabled={inputsDisabled}
+                        />
+                      </div>
+                      <div className="w-7 h-7 m-0.5">
+                        <input 
+                          type="text" 
+                          className={`w-full h-full text-center border border-gray-300 rounded ${getInputBackground(7)}`}
+                          maxLength="1"
+                          value={matrixInputs[7]}
+                          onChange={(e) => handleInputChange(7, e.target.value)}
+                          disabled={inputsDisabled}
+                        />
+                      </div>
+                      <div className="w-7 h-7 m-0.5">
+                        <input 
+                          type="text" 
+                          className={`w-full h-full text-center border border-gray-300 rounded ${getInputBackground(8)}`}
+                          maxLength="1"
+                          value={matrixInputs[8]}
+                          onChange={(e) => handleInputChange(8, e.target.value)}
+                          disabled={inputsDisabled}
+                        />
+                      </div>
+                    </div>
+                  </MatrixBrackets>
                 </div>
               </div>
             </div>
-            
-            <div className="mt-6 text-purple-700">
+
+            {showSolution && (
+              <div className="bg-[#008545]/10 border border-[#008545] p-4 rounded-lg mb-4">
+                <p className="text-[#008545] font-medium text-sm mb-2">
+                  Correct!
+                </p>
+                <p className="text-gray-900 text-sm">
+                  {matrixPairs[currentProblemIndex].isInverse 
+                    ? "And since the result is the identity matrix, these matrices are inverses!"
+                    : "And since the result is not the identity matrix, these matrices are not inverses!"}
+                </p>
+              </div>
+            )}
+
+            <div className="flex justify-end gap-2">
+              {!showSolution && (
+                <div className="glow-button simple-glow">
+                  <Button
+                    onClick={checkAnswers}
+                    className="bg-[#00783E] hover:bg-[#006633] text-white text-sm px-4 py-2 rounded"
+                  >
+                    Check
+                  </Button>
+                </div>
+              )}
+              {showSolution && (
+                <div className="glow-button simple-glow">
+                  <Button
+                    onClick={resetProblems}
+                    className="bg-[#008545] hover:bg-[#00703d] text-white text-sm px-4 py-2 rounded"
+                  >
+                    {currentProblemIndex === matrixPairs.length - 1 ? "Start Over" : "Next Problem"}
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
         </div>
       </div>
-      <p className="text-center text-gray-600 mt-4">
-        Understanding matrix inverses is crucial for linear algebra and many applications!
-      </p>
-    </div>
+    </>
   );
 };
 
